@@ -1,7 +1,6 @@
 // Estado da aplicação
 const state = {
     files: [],
-    maxFiles: 10,
     // Configurações de compressão otimizadas para PDFs de texto
     compression: {
         scale: 1.5,           // Escala de renderização (1.5 = boa qualidade para texto)
@@ -89,21 +88,8 @@ function addFiles(files) {
         return;
     }
 
-    const availableSlots = state.maxFiles - state.files.length;
-    
-    if (availableSlots === 0) {
-        alert(`Limite máximo de ${state.maxFiles} arquivos atingido.`);
-        return;
-    }
-
-    const filesToAdd = pdfFiles.slice(0, availableSlots);
-    
-    if (filesToAdd.length < pdfFiles.length) {
-        alert(`Apenas ${filesToAdd.length} arquivo(s) foram adicionados. Limite de ${state.maxFiles} arquivos.`);
-    }
-
-    // Verificar duplicatas
-    filesToAdd.forEach(file => {
+    // Verificar duplicatas e adicionar
+    pdfFiles.forEach(file => {
         const isDuplicate = state.files.some(f => f.name === file.name && f.size === file.size);
         if (!isDuplicate) {
             state.files.push(file);
