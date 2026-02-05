@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compressor de PDF</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗜️ Compressor de PDF</h1>
+            <p class="subtitle">Comprima seus arquivos PDF para 80-200 KB</p>
+        </header>
+
+        <main>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <p>Arraste e solte seus arquivos PDF aqui</p>
+                <p class="upload-hint">ou clique para selecionar (máx. 10 arquivos)</p>
+                <input type="file" id="fileInput" accept=".pdf" multiple hidden>
+            </div>
+
+            <div class="file-list-container" id="fileListContainer">
+                <div class="file-list-header">
+                    <h3>Arquivos Selecionados (<span id="fileCount">0</span>/10)</h3>
+                    <button class="btn btn-clear" id="clearBtn" title="Limpar todos os arquivos">
+                        🗑️ Limpar
+                    </button>
+                </div>
+                <ul class="file-list" id="fileList"></ul>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" id="compressBtn" disabled>
+                    🗜️ Comprimir e Baixar ZIP
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Preparando...</p>
+            </div>
+
+            <div class="results" id="results">
+                <h3>✅ Compressão Concluída!</h3>
+                <div class="results-summary" id="resultsSummary"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Todos os arquivos são processados localmente no seu navegador.</p>
+            <p>Nenhum dado é enviado para servidores externos.</p>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
