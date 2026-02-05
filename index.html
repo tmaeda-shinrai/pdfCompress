@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compressor de PDF</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗜️</text></svg>">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,13 +18,13 @@
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📁</div>
                 <p>Arraste e solte seus arquivos PDF aqui</p>
-                <p class="upload-hint">ou clique para selecionar (máx. 10 arquivos)</p>
+                <p class="upload-hint">ou clique para selecionar</p>
                 <input type="file" id="fileInput" accept=".pdf" multiple hidden>
             </div>
 
             <div class="file-list-container" id="fileListContainer">
                 <div class="file-list-header">
-                    <h3>Arquivos Selecionados (<span id="fileCount">0</span>/10)</h3>
+                    <h3>Arquivos Selecionados (<span id="fileCount">0</span>)</h3>
                     <button class="btn btn-clear" id="clearBtn" title="Limpar todos os arquivos">
                         🗑️ Limpar
                     </button>
