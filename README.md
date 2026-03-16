@@ -6,7 +6,8 @@ Ferramenta web rápida e segura para comprimir arquivos PDF diretamente no naveg
 
 - **Upload múltiplo**: Adicione quantos arquivos PDF quiser, sem limite.
 - **Compressão agressiva**: Ideal para PDFs de texto (1 a 3 páginas), reduzindo para 80-200 KB por arquivo.
-- **Preserva nomes**: Os arquivos mantêm seus nomes originais após compressão.
+- **Divisão em páginas**: Divida PDFs de múltiplas páginas em arquivos individuais por página.
+- **Preserva nomes**: Os arquivos mantêm seus nomes originais após processamento.
 - **Download em ZIP**: Todos os PDFs comprimidos são baixados juntos em um arquivo ZIP.
 - **Processamento local**: Nenhum arquivo é enviado para servidores externos, garantindo privacidade total.
 - **Botão Limpar**: Remove todos os arquivos enviados rapidamente.
@@ -17,7 +18,7 @@ Ferramenta web rápida e segura para comprimir arquivos PDF diretamente no naveg
 
 1. Abra o arquivo `index.html` em um navegador moderno (Chrome, Edge, Firefox).
 2. Arraste e solte seus arquivos PDF ou clique para selecionar.
-3. Clique em "Comprimir e Baixar ZIP".
+3. Escolha a ação desejada: "Comprimir e Baixar ZIP" ou "Dividir em Páginas e Baixar ZIP".
 4. Após o download, a sessão é limpa automaticamente.
 
 ## Observações

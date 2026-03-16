@@ -18,6 +18,7 @@ const elements = {
     fileCount: document.getElementById('fileCount'),
     clearBtn: document.getElementById('clearBtn'),
     compressBtn: document.getElementById('compressBtn'),
+    splitBtn: document.getElementById('splitBtn'),
     progressContainer: document.getElementById('progressContainer'),
     progressFill: document.getElementById('progressFill'),
     progressText: document.getElementById('progressText'),
@@ -48,6 +49,7 @@ function setupEventListeners() {
     // Botões
     elements.clearBtn.addEventListener('click', clearFiles);
     elements.compressBtn.addEventListener('click', compressAndDownload);
+    elements.splitBtn.addEventListener('click', splitAndDownload);
 }
 
 // Handlers de drag and drop
@@ -138,8 +140,9 @@ function updateUI() {
         </li>
     `).join('');
 
-    // Habilitar/desabilitar botão de compressão
+    // Habilitar/desabilitar botões
     elements.compressBtn.disabled = state.files.length === 0;
+    elements.splitBtn.disabled = state.files.length === 0;
 }
 
 // Comprimir e baixar
@@ -349,11 +352,13 @@ function dataUrlToBytes(dataUrl) {
 function showProgress() {
     elements.progressContainer.classList.add('visible');
     elements.compressBtn.disabled = true;
+    elements.splitBtn.disabled = true;
 }
 
 function hideProgress() {
     elements.progressContainer.classList.remove('visible');
     elements.compressBtn.disabled = state.files.length === 0;
+    elements.splitBtn.disabled = state.files.length === 0;
 }
 
 function updateProgress(percent, text) {
@@ -385,6 +390,109 @@ function showResults(originalSize, compressedSize, results) {
 
 function hideResults() {
     elements.results.classList.remove('visible');
+}
+
+// Dividir em páginas e baixar
+async function splitAndDownload() {
+    if (state.files.length === 0) return;
+
+    showProgress();
+    hideResults();
+
+    const zip = new JSZip();
+    const results = [];
+    let totalOriginalSize = 0;
+    let totalPagesExtracted = 0;
+
+    try {
+        for (let i = 0; i < state.files.length; i++) {
+            const file = state.files[i];
+            totalOriginalSize += file.size;
+
+            updateProgress(
+                ((i / state.files.length) * 90),
+                `Dividindo: ${file.name} (${i + 1}/${state.files.length})`
+            );
+
+            // Obter array buffer
+            const arrayBuffer = await file.arrayBuffer();
+            
+            // Carregar o PDF original diretamente com pdf-lib
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            const numPages = pdfDoc.getPageCount();
+
+            for (let pageNum = 0; pageNum < numPages; pageNum++) {
+                // Criar um novo PDF para essa página
+                const newPdfDoc = await PDFLib.PDFDocument.create();
+                
+                // Copiar a página do documento original para o novo
+                const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [pageNum]);
+                newPdfDoc.addPage(copiedPage);
+                
+                // Salvar o novo PDF
+                const pdfBytes = await newPdfDoc.save();
+                
+                // Gerar nome para a página
+                const baseName = file.name.replace(/\.pdf$/i, '');
+                const newFileName = `${baseName}_Pagina_${pageNum + 1}.pdf`;
+                
+                // Adicionar ao ZIP
+                zip.file(newFileName, pdfBytes);
+                totalPagesExtracted++;
+            }
+
+            results.push({
+                name: file.name,
+                pages: numPages
+            });
+        }
+
+        updateProgress(95, 'Gerando arquivo ZIP...');
+
+        // Gerar e baixar ZIP
+        const zipBlob = await zip.generateAsync({ 
+            type: 'blob',
+            compression: 'DEFLATE',
+            compressionOptions: { level: 9 }
+        });
+
+        updateProgress(100, 'Concluído!');
+
+        // Download do ZIP
+        const timestamp = new Date().toISOString().slice(0, 10);
+        saveAs(zipBlob, `pdfs_divididos_${timestamp}.zip`);
+
+        // Mostrar resultados
+        showSplitResults(totalOriginalSize, totalPagesExtracted, results);
+
+        // Limpar sessão após download
+        setTimeout(() => {
+            clearFiles();
+        }, 1000);
+
+    } catch (error) {
+        console.error('Erro na divisão:', error);
+        alert('Ocorreu um erro durante a divisão. Por favor, tente novamente.\\n\\nDetalhes: ' + error.message);
+    } finally {
+        hideProgress();
+    }
+}
+
+function showSplitResults(originalSize, totalPagesExtracted, results) {
+    let detailsHtml = results.map(r => {
+        return `<small>${escapeHtml(r.name)}: ${r.pages} página(s)</small>`;
+    }).join('<br>');
+    
+    elements.resultsSummary.innerHTML = `
+        <p><strong>Arquivos processados:</strong> ${results.length}</p>
+        <p><strong>Páginas extraídas:</strong> ${totalPagesExtracted}</p>
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+        <div style="text-align: left; max-height: 150px; overflow-y: auto;">
+            ${detailsHtml}
+        </div>
+    `;
+    
+    elements.results.classList.add('visible');
 }
 
 // Utilitários
